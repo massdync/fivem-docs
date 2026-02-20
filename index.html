@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FiveM Natives Mirror</title>
+    <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="title">FiveM Natives Mirror</div>
+            <div class="subtitle">Offline-friendly clone of docs.fivem.net/natives</div>
+        </div>
+
+        <div class="controls">
+            <input id="q" class="q" placeholder="Search natives… (name, hash, param, description)" spellcheck="false" />
+            <select id="apiset">
+                <option value="all">API set: all</option>
+                <option value="client">API set: client</option>
+                <option value="server">API set: server</option>
+            </select>
+            <select id="lang">
+                <option value="raw">Language: raw</option>
+                <option value="lua">Language: lua</option>
+                <option value="cs">Language: c#</option>
+                <option value="js">Language: js</option>
+            </select>
+            <select id="ns">
+                <option value="all">Namespace: all</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="layout">
+        <aside class="sidebar">
+            <div id="status" class="status">Loading natives…</div>
+            <div id="list" class="list" role="listbox" aria-label="Native list"></div>
+        </aside>
+
+        <section class="content">
+            <div id="detail" class="detail">
+                <div class="empty">
+                    <h2>Select a native</h2>
+                    <p>
+                        Tip: deep link like the official page:
+                        <code>?_0x5F739BB8=</code>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Data sources:
+        <a href="https://runtime.fivem.net/doc/natives.json" target="_blank" rel="noreferrer">natives.json</a> •
+        <a href="https://runtime.fivem.net/doc/natives_cfx.json" target="_blank" rel="noreferrer">natives_cfx.json</a>
+    </footer>
+
+    <script type="module" src="./app.js"></script>
+</body>
+
+</html>

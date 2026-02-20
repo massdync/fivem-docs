@@ -1,0 +1,45 @@
+# --- Custom ---
+_README.md
+
+# --- OS / system files ---
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Environment / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- Dependency folders (only if you use Node tooling) ---
+node_modules/
+
+# --- Common tool caches (safe even if you don't use them) ---
+.cache/
+.parcel-cache/
+.vite/
+.next/
+.nuxt/
+.svelte-kit/
+dist/
+build/
+out/
+coverage/
+
+# --- Optional: local-only files ---
+*.local
