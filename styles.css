@@ -11,6 +11,8 @@
     --danger: #ff5c7a;
     --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+
+    --sidebar-width: 400px;
 }
 
 * {
@@ -86,7 +88,7 @@ select {
 
 .layout {
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: var(--sidebar-width) 1fr;
     height: calc(100vh - 58px - 34px);
 }
 
@@ -108,6 +110,7 @@ select {
 .list {
     overflow: auto;
     padding: 6px;
+    overflow-x: hidden;
 }
 
 .item {
