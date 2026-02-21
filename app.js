@@ -242,15 +242,15 @@ function renderList(items, selectedHash) {
         const active = (n.hash === selectedHash) ? "active" : "";
         const badge = `<span class="badge ${n.apiset}">${escapeHtml(n.apiset)}</span>`;
         return `
-      <div class="item ${active}" data-hash="${escapeHtml(n.hash)}" role="option" aria-selected="${active ? "true" : "false"}">
-        <div class="name">${escapeHtml(labelName(n))}</div>
-        <div class="meta">
-          ${badge}
-          <span class="badge">${escapeHtml(n.ns)}</span>
-          <span class="badge">${escapeHtml(n.hash)}</span>
+        <div class="item ${active}" data-hash="${escapeHtml(n.hash)}" role="option" aria-selected="${active ? "true" : "false"}">
+            <div class="name">${escapeHtml(labelName(n))}</div>
+            <div class="meta">
+            ${badge}
+            <span class="badge">${escapeHtml(n.ns)}</span>
+            <span class="badge">${escapeHtml(n.hash)}</span>
+            </div>
         </div>
-      </div>
-    `;
+        `;
     }).join("");
 
     elList.querySelectorAll(".item").forEach((node) => {
@@ -262,6 +262,16 @@ function renderList(items, selectedHash) {
             renderList(items, hash);
         });
     });
+}
+
+function formatExampleCode(t, activeKey, prismLang) {
+    const displayStyle = t.key === activeKey ? "block" : "none";
+    const lang = prismLang[t.key] || "clike";
+
+    const code = escapeHtml(t.code || "");
+    const codeHTML = `<code class="language-${lang}">${code}</code>`;
+
+    return `<pre class="pane" data-pane="${t.key}" style="display:${displayStyle};">${codeHTML}</pre>`
 }
 
 function renderCodeTabs(n, preferredLang) {
@@ -278,21 +288,26 @@ function renderCodeTabs(n, preferredLang) {
     const id = `tabs_${n.hash.replace(/[^a-z0-9]/ig, "")}`;
 
     const tabbar = tabs.map(t => `
-    <button class="tab ${t.key === activeKey ? "active" : ""}" data-tab="${t.key}" data-target="${id}">
-      ${escapeHtml(t.label)}
-    </button>
-  `).join("");
+        <button class="tab ${t.key === activeKey ? "active" : ""}" data-tab="${t.key}" data-target="${id}">
+            ${escapeHtml(t.label)}
+        </button>
+    `).join("");
 
-    const panes = tabs.map(t => `
-    <pre class="pane" data-pane="${t.key}" style="display:${t.key === activeKey ? "block" : "none"};"><code>${escapeHtml(t.code || "")}</code></pre>
-  `).join("");
+    const prismLang = {
+        raw: "c",
+        lua: "lua",
+        cs: "csharp",
+        js: "javascript",
+    };
+
+    const panes = tabs.map(t => formatExampleCode(t, activeKey, prismLang)).join("");
 
     const html = `
     <div class="codeTabs" id="${id}">
-      <div class="tabbar">${tabbar}</div>
-      ${panes}
+        <div class="tabbar">${tabbar}</div>
+        ${panes}
     </div>
-  `;
+    `;
 
     return html;
 }
@@ -304,10 +319,10 @@ function renderDetail(items, hash) {
     );
     if (!n) {
         elDetail.innerHTML = `
-      <div class="empty">
-        <h2>Native not found</h2>
-        <p>Hash: <code>${escapeHtml(hash || "")}</code></p>
-      </div>
+        <div class="empty">
+            <h2>Native not found</h2>
+            <p>Hash: <code>${escapeHtml(hash || "")}</code></p>
+        </div>
     `;
         return;
     }
@@ -321,62 +336,66 @@ function renderDetail(items, hash) {
     const hasParams = params.length > 0;
 
     const paramsTable = !hasParams ? "<p class='empty'>No parameters.</p>" : `
-    <table class="table">
-      <thead>
-        <tr><th>Name</th><th>Type</th><th>Description</th></tr>
-      </thead>
-      <tbody>
-        ${params.map(p => `
-          <tr>
-            <td><code>${escapeHtml(p.name || "")}</code></td>
-            <td><code>${escapeHtml(p.type || "")}</code></td>
-            <td class="mdcell">${mdInline(p.description || "")}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+        <table class="table">
+        <thead>
+            <tr><th>Name</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+            ${params.map(p => `
+            <tr>
+                <td><code>${escapeHtml(p.name || "")}</code></td>
+                <td><code>${escapeHtml(p.type || "")}</code></td>
+                <td class="mdcell">${mdInline(p.description || "")}</td>
+            </tr>
+            `).join("")}
+        </tbody>
+        </table>
+    `;
 
     const returns = `
     <div>
-      <div><code>${escapeHtml(n.results || "void")}</code></div>
-      ${n.resultsDescription ? `<div class="desc md">${mdBlock(n.resultsDescription)}</div>` : ""}
+        <div><code>${escapeHtml(n.results || "void")}</code></div>
+        ${n.resultsDescription ? `<div class="desc md">${mdBlock(n.resultsDescription)}</div>` : ""}
     </div>
-  `;
+    `;
 
     const desc = (n.description || "").trim() || "(No description.)";
 
     elDetail.innerHTML = `
     <article class="detail">
-      <h1>${escapeHtml(title || n.name)}</h1>
-      <div class="kv">
-        <span class="badge ${escapeHtml(n.apiset)}">${escapeHtml(n.apiset)}</span>
-        <span class="badge">${escapeHtml(n.ns)}</span>
-        <span class="badge"><code>${escapeHtml(n.hash)}</code></span>
-        <span class="badge">alt: <code>${escapeHtml(alt)}</code></span>
-      </div>
+        <h1>${escapeHtml(title || n.name)}</h1>
+        <div class="kv">
+            <span class="badge ${escapeHtml(n.apiset)}">${escapeHtml(n.apiset)}</span>
+            <span class="badge">${escapeHtml(n.ns)}</span>
+            <span class="badge"><code>${escapeHtml(n.hash)}</code></span>
+            <span class="badge">alt: <code>${escapeHtml(alt)}</code></span>
+        </div>
 
-      <div class="section">
+    <div class="section">
         <h2>Signature & examples</h2>
         ${renderCodeTabs(n, lang)}
-      </div>
+    </div>
 
-      <div class="section">
-        <h2>Description</h2>
-        <div class="desc md">${mdBlock(desc)}</div>
-      </div>
+        <div class="section">
+            <h2>Description</h2>
+            <div class="desc md">${mdBlock(desc)}</div>
+        </div>
 
-      <div class="section">
-        <h2>Parameters</h2>
-        ${paramsTable}
-      </div>
+        <div class="section">
+            <h2>Parameters</h2>
+            ${paramsTable}
+        </div>
 
-      <div class="section">
-        <h2>Returns</h2>
-        ${returns}
-      </div>
+        <div class="section">
+            <h2>Returns</h2>
+            ${returns}
+        </div>
     </article>
-  `;
+    `;
+
+    if (window.Prism) {
+        Prism.highlightAllUnder(elDetail);
+    }
 
     // wire tab clicks
     elDetail.querySelectorAll(".tab").forEach(btn => {
@@ -390,6 +409,10 @@ function renderDetail(items, hash) {
             root.querySelectorAll(".pane").forEach(p => {
                 p.style.display = (p.getAttribute("data-pane") === key) ? "block" : "none";
             });
+            if (window.Prism) {
+                const activePane = root.querySelector(`.pane[data-pane="${key}"] code`);
+                if (activePane) Prism.highlightElement(activePane);
+            }
         });
     });
 }
@@ -461,14 +484,14 @@ function unique(arr) {
         console.error(e);
         elStatus.textContent = "Failed to load natives. See console for details.";
         elDetail.innerHTML = `
-      <div class="empty">
-        <h2>Load failed</h2>
-        <p>This page prefers local cache files.</p>
-        <ol>
-          <li>Run <code>node ./scripts/fetch-natives.mjs</code></li>
-          <li>Then serve the folder with <code>python -m http.server 5173</code></li>
-        </ol>
-      </div>
-    `;
+        <div class="empty">
+            <h2>Load failed</h2>
+            <p>This page prefers local cache files.</p>
+            <ol>
+            <li>Run <code>node ./scripts/fetch-natives.mjs</code></li>
+            <li>Then serve the folder with <code>python -m http.server 5173</code></li>
+            </ol>
+        </div>
+        `;
     }
 })();
