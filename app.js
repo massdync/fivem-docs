@@ -224,10 +224,14 @@ function renderList(items, selectedHash) {
         if (elApi.value !== "all" && n.apiset !== elApi.value) return false;
         if (elNs.value !== "all" && n.ns !== elNs.value) return false;
         if (q && !n.searchText.includes(q)) return false;
+        if (!n.name || !n.name.trim()) return false;
         return true;
     });
 
-    elStatus.textContent = `${filtered.length.toLocaleString()} natives (of ${items.length.toLocaleString()})`;
+    const showing = filtered.length
+    const total = items.length
+    const skipped = total - showing
+    elStatus.textContent = `${showing.toLocaleString()} natives (of ${total.toLocaleString()}) (${skipped.toLocaleString()} unnamed hidden)`;
 
     const labelName = (n) => {
         switch (lang) {
