@@ -36,6 +36,21 @@ function escapeHtml(s) {
         .replaceAll("'", "&#39;");
 }
 
+function mdToSafeHtml(md) {
+    const src = (md ?? "").toString();
+    if (!src.trim()) return "";
+
+    // If marked isn't loaded, fall back to plain escaped text
+    if (!window.marked) return escapeHtml(src);
+
+    const html = window.marked.parse(src, { gfm: true, breaks: true });
+
+    // If DOMPurify is present, sanitize HTML to avoid XSS
+    if (window.DOMPurify) return window.DOMPurify.sanitize(html);
+
+    return html;
+}
+
 function rawToPascal(raw) {
     if (!raw) return "";
     if (/^_?0x/i.test(raw)) return raw; // hash-style name, keep
@@ -285,7 +300,7 @@ function renderDetail(items, hash) {
           <tr>
             <td><code>${escapeHtml(p.name || "")}</code></td>
             <td><code>${escapeHtml(p.type || "")}</code></td>
-            <td>${escapeHtml(p.description || "")}</td>
+            <td>${mdToSafeHtml(p.description || "")}</td>
           </tr>
         `).join("")}
       </tbody>
@@ -295,7 +310,7 @@ function renderDetail(items, hash) {
     const returns = `
     <div>
       <div><code>${escapeHtml(n.results || "void")}</code></div>
-      ${n.resultsDescription ? `<div class="desc">${escapeHtml(n.resultsDescription)}</div>` : ""}
+      ${n.resultsDescription ? `<div class="desc">${mdToSafeHtml(n.resultsDescription)}</div>` : ""}
     </div>
   `;
 
@@ -318,7 +333,7 @@ function renderDetail(items, hash) {
 
       <div class="section">
         <h2>Description</h2>
-        <div class="desc">${escapeHtml(desc)}</div>
+        <div class="desc">${mdToSafeHtml(desc)}</div>
       </div>
 
       <div class="section">
