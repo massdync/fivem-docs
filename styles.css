@@ -323,3 +323,11 @@ pre {
 .mdcell p {
     margin: 0;
 }
+
+/* PrismJS code block no background color */
+.codeTabs code[class*="language-"],
+.desc.md code[class*="language-"],
+pre[class*="language-"],
+code[class*="language-"] {
+    background: transparent !important;
+}
