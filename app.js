@@ -170,7 +170,7 @@ function parseDeepLink() {
     // Official docs uses "?_0x5F739BB8=" style: key is the hash.
     const url = new URL(location.href);
     for (const [k] of url.searchParams.entries()) {
-        // only remove the leading underscore
+        // only remove the leading underscore, "_0xABC" -> "0xABC"
         if (/^_?0x/i.test(k)) return k.replace(/^_/, "");
     }
     const h = url.searchParams.get("hash");
