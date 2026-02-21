@@ -192,10 +192,15 @@ function parseDeepLink() {
 
 function setDeepLink(hash) {
     const url = new URL(location.href);
+
+    // <-- key line: don't keep "#_0x...." in the URL
+    url.hash = "";
+
     // clear existing hash-like keys
     for (const k of [...url.searchParams.keys()]) {
         if (/^_?0x/i.test(k) || k === "hash") url.searchParams.delete(k);
     }
+
     // keep the official style:
     url.searchParams.set(`_${hash}`, "");
     history.replaceState(null, "", url.toString());
@@ -412,7 +417,10 @@ function unique(arr) {
 
         // Deep link on load
         const deeplink = parseDeepLink();
-        if (deeplink) renderDetail(items, deeplink);
+        if (deeplink) {
+            setDeepLink(deeplink);
+            renderDetail(items, deeplink);
+        }
 
         renderList(items, deeplink);
 
@@ -436,6 +444,17 @@ function unique(arr) {
             const dl = parseDeepLink();
             renderList(items, dl);
             if (dl) renderDetail(items, dl);
+        });
+
+        window.addEventListener("hashchange", () => {
+            const dl = parseDeepLink();
+            if (!dl) return;
+
+            // normalize URL into "?_0x...=" and remove "#_0x..."
+            setDeepLink(dl);
+
+            renderList(items, dl);
+            renderDetail(items, dl);
         });
 
     } catch (e) {
