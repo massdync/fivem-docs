@@ -27,6 +27,30 @@ const elApi = $("#apiset");
 const elLang = $("#lang");
 const elNs = $("#ns");
 
+// markdown -> safe html
+if (window.marked) {
+    marked.setOptions({ gfm: true, breaks: true });
+}
+
+function mdBlock(s) {
+    const text = (s ?? "").toString();
+    if (!text) return "";
+    if (window.marked && window.DOMPurify) {
+        return DOMPurify.sanitize(marked.parse(text));
+    }
+    return escapeHtml(text).replaceAll("\n", "<br>");
+}
+
+function mdInline(s) {
+    const text = (s ?? "").toString();
+    if (!text) return "";
+    if (window.marked && window.DOMPurify) {
+        const html = marked.parseInline ? marked.parseInline(text) : marked.parse(text);
+        return DOMPurify.sanitize(html);
+    }
+    return escapeHtml(text);
+}
+
 function escapeHtml(s) {
     return (s ?? "")
         .replaceAll("&", "&amp;")
@@ -34,21 +58,6 @@ function escapeHtml(s) {
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
-}
-
-function mdToSafeHtml(md) {
-    const src = (md ?? "").toString();
-    if (!src.trim()) return "";
-
-    // If marked isn't loaded, fall back to plain escaped text
-    if (!window.marked) return escapeHtml(src);
-
-    const html = window.marked.parse(src, { gfm: true, breaks: true });
-
-    // If DOMPurify is present, sanitize HTML to avoid XSS
-    if (window.DOMPurify) return window.DOMPurify.sanitize(html);
-
-    return html;
 }
 
 function rawToPascal(raw) {
@@ -300,7 +309,7 @@ function renderDetail(items, hash) {
           <tr>
             <td><code>${escapeHtml(p.name || "")}</code></td>
             <td><code>${escapeHtml(p.type || "")}</code></td>
-            <td>${mdToSafeHtml(p.description || "")}</td>
+            <td class="mdcell">${mdInline(p.description || "")}</td>
           </tr>
         `).join("")}
       </tbody>
@@ -310,7 +319,7 @@ function renderDetail(items, hash) {
     const returns = `
     <div>
       <div><code>${escapeHtml(n.results || "void")}</code></div>
-      ${n.resultsDescription ? `<div class="desc">${mdToSafeHtml(n.resultsDescription)}</div>` : ""}
+      ${n.resultsDescription ? `<div class="desc md">${mdBlock(n.resultsDescription)}</div>` : ""}
     </div>
   `;
 
@@ -333,7 +342,7 @@ function renderDetail(items, hash) {
 
       <div class="section">
         <h2>Description</h2>
-        <div class="desc">${mdToSafeHtml(desc)}</div>
+        <div class="desc md">${mdBlock(desc)}</div>
       </div>
 
       <div class="section">

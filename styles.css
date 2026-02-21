@@ -283,3 +283,43 @@ pre {
 .empty {
     color: var(--muted);
 }
+
+
+/* markdown-rendered descriptions */
+.desc.md {
+    white-space: normal;
+}
+
+.desc.md p {
+    margin: 0.4em 0;
+}
+
+.desc.md ul,
+.desc.md ol {
+    margin: 0.4em 0 0.4em 1.2em;
+}
+
+.desc.md code {
+    font-family: var(--mono);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.1em 0.3em;
+    border-radius: 6px;
+}
+
+.desc.md pre {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    overflow: auto;
+}
+
+.desc.md pre code {
+    background: transparent;
+    padding: 0;
+}
+
+/* table cell markdown (inline) */
+.mdcell p {
+    margin: 0;
+}
