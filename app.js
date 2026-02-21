@@ -12,6 +12,8 @@
 //   python -m http.server 5173
 //   then open http://localhost:5173
 
+var namedNatives = 0;
+
 const SOURCES = {
     gta: ["./data/natives.json", "https://runtime.fivem.net/doc/natives.json"],
     cfx: ["./data/natives_cfx.json", "https://runtime.fivem.net/doc/natives_cfx.json"],
@@ -141,6 +143,7 @@ function flatten(db) {
             const n = n0 || {};
             const hash = n.hash || hashKey;
             const name = n.name || "";
+            if (name) namedNatives += 1;
             const apiset = normalizeApiSet(n);
             const luaName = rawToPascal(name);
             const exMap = toExamplesMap(n.examples);
@@ -230,7 +233,7 @@ function renderList(items, selectedHash) {
 
     const showing = filtered.length
     const total = items.length
-    const skipped = total - showing
+    const skipped = total - namedNatives
     elStatus.textContent = `${showing.toLocaleString()} natives (of ${total.toLocaleString()}) (${skipped.toLocaleString()} unnamed hidden)`;
 
     const labelName = (n) => {
