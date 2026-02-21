@@ -281,7 +281,10 @@ function renderCodeTabs(n, preferredLang) {
 }
 
 function renderDetail(items, hash) {
-    const n = items.find((x) => x.hash === hash);
+    // avoid case sensitive
+    const n = items.find(
+        (x) => (x.hash || "").toLowerCase() === (hash || "").toLowerCase()
+    );
     if (!n) {
         elDetail.innerHTML = `
       <div class="empty">
