@@ -166,15 +166,27 @@ function flatten(db) {
     return out;
 }
 
+function parseHashFragment() {
+    const raw = (location.hash || "").trim();
+    const m = raw.match(/^#_?(0x[0-9a-f]+)$/i);
+    return m ? m[1] : null;
+}
+
 function parseDeepLink() {
-    // Official docs uses "?_0x5F739BB8=" style: key is the hash.
+    // 1) support official-style markdown links: href="#_0xABC..."
+    const fromHash = parseHashFragment();
+    if (fromHash) return fromHash;
+
+    // 2) support official deep link: "?_0xABC=", this parses "_0xABC" to "0xABC"
     const url = new URL(location.href);
     for (const [k] of url.searchParams.entries()) {
-        // only remove the leading underscore, "_0xABC" -> "0xABC"
         if (/^_?0x/i.test(k)) return k.replace(/^_/, "");
     }
+
+    // 3) optional: "?hash=0xABC"
     const h = url.searchParams.get("hash");
     if (h && /^0x/i.test(h)) return h;
+
     return null;
 }
 
