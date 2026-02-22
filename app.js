@@ -12,7 +12,7 @@
 //   python -m http.server 5173
 //   then open http://localhost:5173
 
-var namedNatives = 0;
+var unnamedNatives = 0;
 
 const SOURCES = {
     gta: ["./data/natives.json", "https://runtime.fivem.net/doc/natives.json"],
@@ -143,7 +143,7 @@ function flatten(db) {
             const n = n0 || {};
             const hash = n.hash || hashKey;
             const name = n.name || "";
-            if (name) namedNatives += 1;
+            if (!name) unnamedNatives += 1;
             const apiset = normalizeApiSet(n);
             const luaName = rawToPascal(name);
             const exMap = toExamplesMap(n.examples);
@@ -233,8 +233,7 @@ function renderList(items, selectedHash) {
 
     const showing = filtered.length
     const total = items.length
-    const skipped = total - namedNatives
-    elStatus.textContent = `${showing.toLocaleString()} natives (of ${total.toLocaleString()}) (${skipped.toLocaleString()} unnamed hidden)`;
+    elStatus.textContent = `${showing.toLocaleString()} natives (of ${total.toLocaleString()}) (${unnamedNatives.toLocaleString()} unnamed hidden)`;
 
     const labelName = (n) => {
         switch (lang) {
@@ -378,10 +377,10 @@ function renderDetail(items, hash) {
             <span class="badge">alt: <code>${escapeHtml(alt)}</code></span>
         </div>
 
-    <div class="section">
-        <h2>Signature & examples</h2>
-        ${renderCodeTabs(n, lang)}
-    </div>
+        <div class="section">
+            <h2>Signature & examples</h2>
+            ${renderCodeTabs(n, lang)}
+        </div>
 
         <div class="section">
             <h2>Description</h2>
